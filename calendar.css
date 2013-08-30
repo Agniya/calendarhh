@@ -1,0 +1,132 @@
+.calendar{
+border: 1px solid black;
+}
+
+.menu{
+border: 1px solid black;
+}
+
+.add{
+border: 1px solid black;
+}
+
+.update{
+border: 1px solid black;
+}
+
+.go_back{
+border: 1px solid black;
+width: 10px;
+height:10px;
+padding-left: 10px;
+float: left;
+}
+
+.go_forward{
+border: 1px solid black;
+width: 10px;
+height:10px;
+padding-left: 10px;
+float: left;
+}
+
+.today{
+float: left;
+background-color: grey;
+width: 60px;
+height: 20px;
+}
+
+#month{
+border: 1px solid black;
+//overflow: hidden;
+width: 720px;
+padding: 0;
+z-index:0;
+}
+
+.days{
+border: 1px solid black;
+float: left;
+width: 100px;
+height:100px;
+margin:0;
+list-style-type: none;
+z-index: 0;
+}
+
+.dateDig{
+border: 1px solid black;
+}
+
+.block20{
+width: 20%;
+margin:0;
+}
+
+.block30{
+width: 20%;
+margin:0;
+float:left;
+}
+
+.block70{
+width: 20%;
+margin:0;
+float:left;
+}
+
+.ml20{
+margin-left: 20px;
+}
+
+.clear{clear: left;}
+
+.cell{
+border: 1px solid black;
+width: 100px;
+height:100px;
+position:relative;
+float:left;
+}
+
+.dn{display:none;}
+
+.arrow-box{
+border: 1px solid black;
+padding: 20px 30px;
+position: relative;
+border-radius: 3px;
+top:-130%;
+left:15%;
+z-index:99;
+width: 200%;
+background: #fff;
+}
+
+.arrow:before,.arrow{
+top:100%;
+margin-top: 1px;
+border-bottom-color: transparent;
+}
+
+.arrow{
+position:absolute;
+border: 10px solid grey;
+border-bottom-color: transparent;
+border-left-color: transparent;
+border-right-color: transparent;
+}
+
+.arrow:before{
+top:-15px;
+margin-top: -1.5em;
+border-bottom-color: transparent;
+border-top-color: #fff;
+content:'';
+left: -15px;
+}
+
+input{
+margin-left: 30px;
+}
