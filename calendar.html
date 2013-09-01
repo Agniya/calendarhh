@@ -1,222 +1,285 @@
 <!DOCTYPE html>
-<html>
-<head>
-<link rel="stylesheet" href="calendar.css">
-<!--<script type="text/javascript" src="calendar.js"></script>-->
-<script>
-window.onload = function(){
+	<html>
+		<head>
+		<link rel="stylesheet" href="calendar.css">
+		<!--<script type="text/javascript" src="calendar.js"></script>-->
+		<script>
+		window.onload = function(){
 
-function Mnth(year,month){
-this.init(year,month);
-}
-Mnth.prototype = {
-curMonth:{},
-storage:{},
-//ind:0,
-init: function(year,month){
-var that = this;
-that.year=year;
-that.month=month;
-var list = that.renderCell();
-if(localStorage[that.month] !=undefined){that.storage = JSON.parse(localStorage[that.month]);}
-else{console.log(1)}
+		function Mnth(year,month){
+			this.init(year,month);
+		}
+		Mnth.prototype = {
+			curMonth:{},
+			storage:{},
+			//ind:0,
+			init: function(year,month){
+				var that = this;
+				that.year=year;
+				that.month=month;
+				var list = that.renderCell();
+				if(localStorage[that.month] !=undefined){that.storage = JSON.parse(localStorage[that.month]);}
+							
+				document.getElementById('Add').onclick = function(){
+					var activeL = document.getElementsByClassName('days active');
+					if(activeL.length>=1){
+						var ind = activeL[0].getAttribute('index');
+						that.showBox(ind);							
+					};
+				};
+				
+				document.getElementById('Update').onclick = function(){
+					var activeL = document.getElementsByClassName('days active');
+					if(activeL.length>=1){
+						var ind = activeL[0].getAttribute('index');
+						if(JSON.parse(localStorage[that.month])[ind] != undefined){
+							var ev = activeL[0].querySelector('span.events');
+							activeL[0].removeChild(ev);
+							that.showBox(ind);
+						}
+					};
+				};
+				
+				list.onclick = function(event){
+					var event = event||window.event;
+					for(var i=0;i<list.children.length;i++){
+						that.removeModal(list.children[i]);
+					} 
+				
+				if(event.target.tagName == 'LI'){	
+					var prevActive = document.getElementsByClassName('days active');
+					if(prevActive.length>=1){prevActive[0].classList.remove('active')};
+					event.target.classList.add('active');
+					if((event.target.className == 'days prevMnth')
+					|| (event.target.className == 'days nextMnth'))return;}
+					that.createEvent(that.ind,that.storage[that.ind][that.storage[that.ind].length-1]);
+				} 
+			},
+			showBox: function(ind){
+				var that = this;
+				//that.storage[ind] = {}; 
+				if(that.storage[ind]==undefined){that.storage[ind] = [];}
+				var obj = {};
+				that.storage[ind] = [];
+				that.storage[ind].push(obj);
+				var arrBox = that.renderBox(ind);
+					arrBox.onclick = function(){ 
+						var event = event||window.event;
+						event.stopPropagation();
+						if(event.target.tagName == 'INPUT'){
+							document.getElementById(event.target.id).onblur = function(){
+								//that.storage[ind][event.target.id] = event.target.value; 
+								that.storage[ind][that.storage[ind].length-1][event.target.id] = event.target.value; 
+								that.ind = ind;
+								//console.log(that.ind);
+								
+							}
+						}
+							//console.log(that.storage[ind][that.storage[ind].length-1]); 
+							localStorage[that.month] = JSON.stringify(that.storage);
+							console.log(JSON.parse(localStorage[that.month])[ind]); 
+					}
+			},
+			removeModal: function(el){
+				try{
+				while((el.lastChild != null)&&(el.lastChild.className == 'arrow-box')) el.removeChild(el.lastChild);
+				el.parentNode.removeChild(el.lastChild);
+				} catch (e){
+				return false;
+				}
+				return true;
+			},
+			renderCell: function(){
+				var list = document.createElement('ul');
+				document.getElementById('1').appendChild(list);
+				list.setAttribute('id','month'); 
+				var start = new Date(this.year,this.month,1),
+				td = start.getDay(),
+				countDay = 1;
+				console.log(td); // если td == 0
+				if(td==0){td = 7};
+				var a = function(t,elem){elem.innerHTML = t;} 
+				var daysOfweek = ['вс','пн','вт','ср','чт','пт','сб'];
+				var mnthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+				var daysAmmount = [31,28,31,30,31,30,31,31,30,31,30,31];
+			
+				for(var i=0;i<42;i++){
+					var li = document.createElement('li'),
+					day = document.createElement('span');
+					list.appendChild(li);
+					li.classList.add('days'); 
+					day.classList.add('dayOfweek'); 
+					li.setAttribute('index',i);
+					if((i>=0)&&(i<7)){
+						li.appendChild(day);
+						if(i==6){a(daysOfweek[0],day)} else {a(daysOfweek[i+1],day);}
+					}
+					if(i==td-1){
+						if(countDay <= daysAmmount[this.month]){
+							var date = document.createElement('span');
+							li.appendChild(date);
+							date.classList.add('date'); 
+							a(countDay,date);
+							countDay++;
+							td++;
+						}else if(countDay > daysAmmount[this.month]){
+							countDay = 1;
+							var date = document.createElement('span');
+							li.appendChild(date);
+							li.classList.add('nextMnth');
+							date.classList.add('date'); 
+							a(countDay,date);
+							countDay++;
+							td++;				
+						}						
+					}					
+				}
+				
+				var prevMonthDays = daysAmmount[this.month-1];
+				var t = start.getDay();
+				if(t==0){t = 7};
+				for(var n=t-2;n >=0;n--)
+				{
+					var dat = document.createElement('span');
+					list.children[n].appendChild(dat);
+					list.children[n].classList.add('prevMnth');
+					dat.classList.add('date'); 
+					a(prevMonthDays,dat);	
+					prevMonthDays--;
+				}
+				var el = document.getElementsByClassName('nextMnth')[0];
+				var indStart = el.getAttribute('index');
+				for(var n=indStart;n<42;n++)
+				{
+					var dat = document.createElement('span');
+					list.children[n].classList.add('nextMnth');
+				}
+				return list;
+			},
+		renderBox: function(ind){
+			
+			var box = document.createElement('div'),//плашка для записи дела
+			form = document.createElement('form'),//форма 
+			arrow = document.createElement('i');//стрелочка
+			
+			var list = document.getElementById('month');
+			for(var n = 0; n< list.children.length; n++){
+				if(list.children[n].getAttribute('index') == ind){list.children[n].appendChild(box);} //добавление плашки к ячейке, по которой кликнули
+			}			
+			
+			box.classList.add('arrow-box');
+			box.appendChild(form);
+			form.setAttribute('id','make_event');
 
-list.onclick = function(event){
-for(var i=0;i<list.children.length;i++){
-that.removeModal(list.children[i]);
-} 
-that.showBox(); 
-} 
-},
-showBox: function(event){
-var that = this;
-var event = event||window.event;
-if(event.target.tagName == 'LI'){ 
-var ind = event.target.getAttribute('index');
-that.storage[ind] = {}; 
-var arrBox = that.renderBox();
-arrBox.onclick = function(){ 
-var event = event||window.event;
-event.stopPropagation();
-if(event.target.tagName == 'INPUT'){
-document.getElementById(event.target.id).onblur = function(){
-that.storage[ind][event.target.id] = event.target.value; 
-that.ind = ind;
-}
-}
-console.log(that.storage[ind]); 
-localStorage[that.month] = JSON.stringify(that.storage);
-console.log(localStorage[that.month]); 
-}
-} 
-that.createEvent(that.ind,that.storage[that.ind]);
-},
-removeModal: function(el){
-try{
-while((el.lastChild != null)&&(el.lastChild.className == 'arrow-box')) el.removeChild(el.lastChild);
-el.parentNode.removeChild(el.lastChild);
-} catch (e){
-return false;
-}
-return true;
-},
-renderCell: function(){
-var list = document.createElement('ul');
-document.getElementById('1').appendChild(list);
-list.setAttribute('id','month'); 
-var start = new Date(this.year,this.month,1),
-td = start.getDay(),
-countDay = 1;
-console.log(td); // РµСЃР»Рё td == 0
-if(td==0){td = 7};
-var a = function(t,elem){elem.innerHTML = t;} 
-var daysOfweek = ['РІСЃ','РїРЅ','РІС‚','СЃСЂ','С‡С‚','РїС‚','СЃР±'];
-var mnthNames = ['РЇРЅРІР°СЂСЊ','Р¤РµРІСЂР°Р»СЊ','РњР°СЂС‚','РђРїСЂРµР»СЊ','РњР°Р№','РСЋРЅСЊ','РСЋР»СЊ','РђРІРіСѓСЃС‚','РЎРµРЅС‚СЏР±СЂСЊ','РћРєС‚СЏР±СЂСЊ','РќРѕСЏР±СЂСЊ','Р”РµРєР°Р±СЂСЊ'];
-var daysAmmount = [31,28,31,30,31,30,31,31,30,31,30,31];
+			//создание необходимых ДОМ-узлов 
+			function initElems(){
+				var elem = {};
+				elem.div = document.createElement('div');
+				elem.label = document.createElement('label');
+				elem.input = document.createElement('input');
+				return elem;
+			}
 
-for(var i=0;i<35;i++){
-var li = document.createElement('li'),
-day = document.createElement('span');
-list.appendChild(li);
-li.classList.add('days'); 
-day.classList.add('dayOfweek'); 
-li.setAttribute('index',i);
-if((i>=0)&&(i<7)){
-li.appendChild(day);
-if(i==6){a(daysOfweek[0],day)} else {a(daysOfweek[i+1],day);}
-}
-if(i==td-1){
-if(countDay <= daysAmmount[this.month]){
-var date = document.createElement('span');
-li.appendChild(date);
-date.classList.add('date'); 
-a(countDay,date);
-countDay++;
-td++;}
-}
-var n = start.getDay();}
-var prevMonthDays = daysAmmount[this.month-1];
-var t = start.getDay();
-if(t==0){t = 7};
-for(var n=t-2;n >=0;n--)
-{
-var dat = document.createElement('span');
-console.log(n);
-console.log(list.children[n]);
-list.children[n].appendChild(dat);
-dat.classList.add('date'); 
-a(prevMonthDays,dat); 
-prevMonthDays--;
-}
-return list;
-},
-renderBox: function(){
-var box = document.createElement('div'),//РїР»Р°С€РєР° РґР»СЏ Р·Р°РїРёСЃРё РґРµР»Р°
-form = document.createElement('form'),//С„РѕСЂРјР° 
-arrow = document.createElement('i');//СЃС‚СЂРµР»РѕС‡РєР°
-event.target.appendChild(box); //РґРѕР±Р°РІР»РµРЅРёРµ РїР»Р°С€РєРё Рє СЏС‡РµР№РєРµ, РїРѕ РєРѕС‚РѕСЂРѕР№ РєР»РёРєРЅСѓР»Рё
-box.classList.add('arrow-box');
-box.appendChild(form);
-form.setAttribute('id','make_event');
+			function makeInputBlock(name,id){
+				var el = initElems();
+				form.appendChild(el.div);
+				el.div.appendChild(el.label);
+				el.label.innerHTML = name;
+				el.label.setAttribute('for',id);
+				form.appendChild(el.div); 
+				el.div.appendChild(el.input);
+				el.input.setAttribute('id',id);
+			}
 
-//СЃРѕР·РґР°РЅРёРµ РЅРµРѕР±С…РѕРґРёРјС‹С… Р”РћРњ-СѓР·Р»РѕРІ 
-function initElems(){
-var elem = {};
-elem.div = document.createElement('div');
-elem.label = document.createElement('label');
-elem.input = document.createElement('input');
-return elem;
-}
+			makeInputBlock('Events','action');
+			makeInputBlock('Members','members');
+			makeInputBlock('Time','time');
 
-function makeInputBlock(name,id){
-var el = initElems();
-form.appendChild(el.div);
-el.div.appendChild(el.label);
-el.label.innerHTML = name;
-el.label.setAttribute('for',id);
-form.appendChild(el.div); 
-el.div.appendChild(el.input);
-el.input.setAttribute('id',id);
+			box.appendChild(arrow);
+			arrow.classList.add('arrow');
+			return box;
+		},
+		createEvent: function(ind,obj){
+			var span = document.createElement('span'),
+			list = document.getElementById('month');
+			list.children[ind].appendChild(span);
+			span.innerHTML = 'Event: ' + obj['action'];
+			span.innerHTML += '<br/>Members: ' +obj['members'];
+			span.innerHTML += '<br/>Time: ' +obj['time']; 
+			span.classList.add('events');
+			}
+		}
+		
+		//ИНИЦИАЛИЗАЦИЯ
+		
+		//начальная - текущая дата 
+		var mnthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+		var today = new Date(),
+		year = today.getFullYear(),
+		month = today.getMonth(),
+		//создается экземпляр текущего месяца - объект передается текущий год и месяц
+		mnth = new Mnth(year,month); 
+		getEvents();
+		document.getElementById('currentM').innerHTML = mnthNames[month]+' '+year;
+		//console.log(JSON.parse(localStorage[month]));
+		function getEvents(){
+			if(localStorage[month] !=undefined){
+				var obj = JSON.parse(localStorage[month]);
+				var calend = document.getElementById('month');
+				for(var i=0;i<calend.children.length;i++){
+					var ind = calend.children[i].getAttribute('index');
+					
+					if(obj[ind]!=undefined){
+					
+						for(var n=0;n<obj[ind].length;n++){
+							console.log(JSON.parse(localStorage[month])[ind][n]); 		
+							mnth.createEvent(ind,obj[ind][n]);
+						}
+					}
+				}
+			}
+		};
+		//localStorage.clear();
+		//по клику на стрелку определяется новое значение месяца
+		//значение передается в новый экземпляр месяца
+		//в currentM - новый месяц
+		var changeMnth = document.getElementById('change_mnth');
+		changeMnth.onclick = function(){
+			var div = document.getElementById('1');
+			var m = document.getElementById('month');
+			
+			if(event.target.getAttribute('value') == 'Previous'){
+				div.removeChild(m);
+				delete mnth; 
+				month -= 1;
+				if(month == -1){month = 11;year -=1;}
+				var mnth = new Mnth(year,month); 
+				getEvents();
+				document.getElementById('currentM').innerHTML = mnthNames[month]+' '+year;				
+			}else if(event.target.getAttribute('value') == 'Next'){
+				div.removeChild(m);
+				delete mnth; 
+				month += 1;
+				if(month == 12){month = 0;year +=1;}
+				var mnth = new Mnth(year,month); 
+				getEvents();
+				document.getElementById('currentM').innerHTML = mnthNames[month]+' '+year;				
+			}
+		}
+		
 }
+		</script>
+		</head>
+		<body>
+		<div id="options">
+			<input type="button" id="Add" value="Add"><input type="button" id="Update" value="Update">
+		</div>
+		<div id="change_mnth">
+			<input type="button" id="Previous" value="Previous"><span id="currentM"></span><input type="button" id="Next" value="Next">
+		</div>	
+		<div id = "1"></div>
 
-makeInputBlock('Events','action');
-makeInputBlock('Members','members');
-makeInputBlock('Time','time');
-
-box.appendChild(arrow);
-arrow.classList.add('arrow');
-return box;
-},
-createEvent: function(ind,obj){
-var span = document.createElement('span'),
-list = document.getElementById('month');
-list.children[ind].appendChild(span);
-span.innerHTML = 'Event: ' + obj['action'];
-span.innerHTML += '<br/>Members: ' +obj['members'];
-span.innerHTML += '<br/>Time: ' +obj['time']; 
-}
-}
-//localStorage.clear();
-//РЅР°С‡Р°Р»СЊРЅР°СЏ - С‚РµРєСѓС‰Р°СЏ РґР°С‚Р° 
-var today = new Date(),
-year = today.getFullYear(),
-month = today.getMonth(),
-//СЃРѕР·РґР°РµС‚СЃСЏ СЌРєР·РµРјРїР»СЏСЂ С‚РµРєСѓС‰РµРіРѕ РјРµСЃСЏС†Р° - РѕР±СЉРµРєС‚ РїРµСЂРµРґР°РµС‚СЃСЏ С‚РµРєСѓС‰РёР№ РіРѕРґ Рё РјРµСЃСЏС†
-mnth = new Mnth(year,month); 
-getEvents();
-document.getElementById('currentM').innerHTML = month +' '+year;
-//console.log(JSON.parse(localStorage[month]));
-function getEvents(){
-if(localStorage[month] !=undefined){
-var obj = JSON.parse(localStorage[month]);
-var calend = document.getElementById('month');
-for(var i=0;i<calend.children.length;i++){
-var ind = calend.children[i].getAttribute('index');
-for(var key in obj){
-if((key == ind) &&(obj[key] !== undefined)){
-mnth.createEvent(ind,obj[key]);
-}
-}
-}
-
-}
-else{console.log(2)}
-};
-
-//РїРѕ РєР»РёРєСѓ РЅР° СЃС‚СЂРµР»РєСѓ РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ РЅРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ РјРµСЃСЏС†Р°
-//Р·РЅР°С‡РµРЅРёРµ РїРµСЂРµРґР°РµС‚СЃСЏ РІ РЅРѕРІС‹Р№ СЌРєР·РµРјРїР»СЏСЂ РјРµСЃСЏС†Р°
-//РІ currentM - РЅРѕРІС‹Р№ РјРµСЃСЏС†
-var changeMnth = document.getElementById('change_mnth');
-changeMnth.onclick = function(){
-var div = document.getElementById('1');
-var m = document.getElementById('month');
-div.removeChild(m);
-delete mnth; 
-if(event.target.getAttribute('value') == 'Previous'){
-month -= 1;
-if(month == -1){month = 11;year -=1;}
-var mnth = new Mnth(year,month); 
-getEvents();
-document.getElementById('currentM').innerHTML = month +' '+year;
-}else if(event.target.getAttribute('value') == 'Next'){
-month += 1;
-if(month == 12){month = 0;year +=1;}
-var mnth = new Mnth(year,month); 
-getEvents();
-document.getElementById('currentM').innerHTML = month+' '+year;
-}
-}
-
-}
-</script>
-</head>
-<body>
-<div id="change_mnth">
-<input type="button" value="Previous"><span id="currentM"></span><input type="button" value="Next">
-</div>
-<div id = "1"></div>
-
-</div>
-</div>
-</body>
-</html>
+		</div>
+		</div>
+		</body>
+	</html>
