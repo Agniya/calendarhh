@@ -1,285 +1,522 @@
 <!DOCTYPE html>
-	<html>
-		<head>
-		<link rel="stylesheet" href="calendar.css">
-		<!--<script type="text/javascript" src="calendar.js"></script>-->
-		<script>
-		window.onload = function(){
+<html>
+<head>
+<link rel="stylesheet" href="calendar.css">
+<!--<script type="text/javascript" src="calendar.js"></script>-->
+<script>
+window.onload = function(){
 
-		function Mnth(year,month){
-			this.init(year,month);
-		}
-		Mnth.prototype = {
-			curMonth:{},
-			storage:{},
-			//ind:0,
-			init: function(year,month){
-				var that = this;
-				that.year=year;
-				that.month=month;
-				var list = that.renderCell();
-				if(localStorage[that.month] !=undefined){that.storage = JSON.parse(localStorage[that.month]);}
-							
-				document.getElementById('Add').onclick = function(){
-					var activeL = document.getElementsByClassName('days active');
-					if(activeL.length>=1){
-						var ind = activeL[0].getAttribute('index');
-						that.showBox(ind);							
-					};
-				};
-				
-				document.getElementById('Update').onclick = function(){
-					var activeL = document.getElementsByClassName('days active');
-					if(activeL.length>=1){
-						var ind = activeL[0].getAttribute('index');
-						if(JSON.parse(localStorage[that.month])[ind] != undefined){
-							var ev = activeL[0].querySelector('span.events');
-							activeL[0].removeChild(ev);
-							that.showBox(ind);
-						}
-					};
-				};
-				
-				list.onclick = function(event){
-					var event = event||window.event;
-					for(var i=0;i<list.children.length;i++){
-						that.removeModal(list.children[i]);
-					} 
-				
-				if(event.target.tagName == 'LI'){	
-					var prevActive = document.getElementsByClassName('days active');
-					if(prevActive.length>=1){prevActive[0].classList.remove('active')};
-					event.target.classList.add('active');
-					if((event.target.className == 'days prevMnth')
-					|| (event.target.className == 'days nextMnth'))return;}
-					that.createEvent(that.ind,that.storage[that.ind][that.storage[that.ind].length-1]);
-				} 
-			},
-			showBox: function(ind){
-				var that = this;
-				//that.storage[ind] = {}; 
-				if(that.storage[ind]==undefined){that.storage[ind] = [];}
-				var obj = {};
-				that.storage[ind] = [];
-				that.storage[ind].push(obj);
-				var arrBox = that.renderBox(ind);
-					arrBox.onclick = function(){ 
-						var event = event||window.event;
-						event.stopPropagation();
-						if(event.target.tagName == 'INPUT'){
-							document.getElementById(event.target.id).onblur = function(){
-								//that.storage[ind][event.target.id] = event.target.value; 
-								that.storage[ind][that.storage[ind].length-1][event.target.id] = event.target.value; 
-								that.ind = ind;
-								//console.log(that.ind);
-								
-							}
-						}
-							//console.log(that.storage[ind][that.storage[ind].length-1]); 
-							localStorage[that.month] = JSON.stringify(that.storage);
-							console.log(JSON.parse(localStorage[that.month])[ind]); 
-					}
-			},
-			removeModal: function(el){
-				try{
-				while((el.lastChild != null)&&(el.lastChild.className == 'arrow-box')) el.removeChild(el.lastChild);
-				el.parentNode.removeChild(el.lastChild);
-				} catch (e){
-				return false;
-				}
-				return true;
-			},
-			renderCell: function(){
-				var list = document.createElement('ul');
-				document.getElementById('1').appendChild(list);
-				list.setAttribute('id','month'); 
-				var start = new Date(this.year,this.month,1),
-				td = start.getDay(),
-				countDay = 1;
-				console.log(td); // если td == 0
-				if(td==0){td = 7};
-				var a = function(t,elem){elem.innerHTML = t;} 
-				var daysOfweek = ['вс','пн','вт','ср','чт','пт','сб'];
-				var mnthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-				var daysAmmount = [31,28,31,30,31,30,31,31,30,31,30,31];
-			
-				for(var i=0;i<42;i++){
-					var li = document.createElement('li'),
-					day = document.createElement('span');
-					list.appendChild(li);
-					li.classList.add('days'); 
-					day.classList.add('dayOfweek'); 
-					li.setAttribute('index',i);
-					if((i>=0)&&(i<7)){
-						li.appendChild(day);
-						if(i==6){a(daysOfweek[0],day)} else {a(daysOfweek[i+1],day);}
-					}
-					if(i==td-1){
-						if(countDay <= daysAmmount[this.month]){
-							var date = document.createElement('span');
-							li.appendChild(date);
-							date.classList.add('date'); 
-							a(countDay,date);
-							countDay++;
-							td++;
-						}else if(countDay > daysAmmount[this.month]){
-							countDay = 1;
-							var date = document.createElement('span');
-							li.appendChild(date);
-							li.classList.add('nextMnth');
-							date.classList.add('date'); 
-							a(countDay,date);
-							countDay++;
-							td++;				
-						}						
-					}					
-				}
-				
-				var prevMonthDays = daysAmmount[this.month-1];
-				var t = start.getDay();
-				if(t==0){t = 7};
-				for(var n=t-2;n >=0;n--)
-				{
-					var dat = document.createElement('span');
-					list.children[n].appendChild(dat);
-					list.children[n].classList.add('prevMnth');
-					dat.classList.add('date'); 
-					a(prevMonthDays,dat);	
-					prevMonthDays--;
-				}
-				var el = document.getElementsByClassName('nextMnth')[0];
-				var indStart = el.getAttribute('index');
-				for(var n=indStart;n<42;n++)
-				{
-					var dat = document.createElement('span');
-					list.children[n].classList.add('nextMnth');
-				}
-				return list;
-			},
-		renderBox: function(ind){
-			
-			var box = document.createElement('div'),//плашка для записи дела
-			form = document.createElement('form'),//форма 
-			arrow = document.createElement('i');//стрелочка
-			
-			var list = document.getElementById('month');
-			for(var n = 0; n< list.children.length; n++){
-				if(list.children[n].getAttribute('index') == ind){list.children[n].appendChild(box);} //добавление плашки к ячейке, по которой кликнули
-			}			
-			
-			box.classList.add('arrow-box');
-			box.appendChild(form);
-			form.setAttribute('id','make_event');
-
-			//создание необходимых ДОМ-узлов 
-			function initElems(){
-				var elem = {};
-				elem.div = document.createElement('div');
-				elem.label = document.createElement('label');
-				elem.input = document.createElement('input');
-				return elem;
-			}
-
-			function makeInputBlock(name,id){
-				var el = initElems();
-				form.appendChild(el.div);
-				el.div.appendChild(el.label);
-				el.label.innerHTML = name;
-				el.label.setAttribute('for',id);
-				form.appendChild(el.div); 
-				el.div.appendChild(el.input);
-				el.input.setAttribute('id',id);
-			}
-
-			makeInputBlock('Events','action');
-			makeInputBlock('Members','members');
-			makeInputBlock('Time','time');
-
-			box.appendChild(arrow);
-			arrow.classList.add('arrow');
-			return box;
-		},
-		createEvent: function(ind,obj){
-			var span = document.createElement('span'),
-			list = document.getElementById('month');
-			list.children[ind].appendChild(span);
-			span.innerHTML = 'Event: ' + obj['action'];
-			span.innerHTML += '<br/>Members: ' +obj['members'];
-			span.innerHTML += '<br/>Time: ' +obj['time']; 
-			span.classList.add('events');
-			}
-		}
-		
-		//ИНИЦИАЛИЗАЦИЯ
-		
-		//начальная - текущая дата 
-		var mnthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-		var today = new Date(),
-		year = today.getFullYear(),
-		month = today.getMonth(),
-		//создается экземпляр текущего месяца - объект передается текущий год и месяц
-		mnth = new Mnth(year,month); 
-		getEvents();
-		document.getElementById('currentM').innerHTML = mnthNames[month]+' '+year;
-		//console.log(JSON.parse(localStorage[month]));
-		function getEvents(){
-			if(localStorage[month] !=undefined){
-				var obj = JSON.parse(localStorage[month]);
-				var calend = document.getElementById('month');
-				for(var i=0;i<calend.children.length;i++){
-					var ind = calend.children[i].getAttribute('index');
-					
-					if(obj[ind]!=undefined){
-					
-						for(var n=0;n<obj[ind].length;n++){
-							console.log(JSON.parse(localStorage[month])[ind][n]); 		
-							mnth.createEvent(ind,obj[ind][n]);
-						}
-					}
-				}
-			}
-		};
-		//localStorage.clear();
-		//по клику на стрелку определяется новое значение месяца
-		//значение передается в новый экземпляр месяца
-		//в currentM - новый месяц
-		var changeMnth = document.getElementById('change_mnth');
-		changeMnth.onclick = function(){
-			var div = document.getElementById('1');
-			var m = document.getElementById('month');
-			
-			if(event.target.getAttribute('value') == 'Previous'){
-				div.removeChild(m);
-				delete mnth; 
-				month -= 1;
-				if(month == -1){month = 11;year -=1;}
-				var mnth = new Mnth(year,month); 
-				getEvents();
-				document.getElementById('currentM').innerHTML = mnthNames[month]+' '+year;				
-			}else if(event.target.getAttribute('value') == 'Next'){
-				div.removeChild(m);
-				delete mnth; 
-				month += 1;
-				if(month == 12){month = 0;year +=1;}
-				var mnth = new Mnth(year,month); 
-				getEvents();
-				document.getElementById('currentM').innerHTML = mnthNames[month]+' '+year;				
-			}
-		}
-		
+function Mnth(year,month){
+	this.init(year,month);
 }
-		</script>
-		</head>
-		<body>
-		<div id="options">
-			<input type="button" id="Add" value="Add"><input type="button" id="Update" value="Update">
-		</div>
-		<div id="change_mnth">
-			<input type="button" id="Previous" value="Previous"><span id="currentM"></span><input type="button" id="Next" value="Next">
-		</div>	
-		<div id = "1"></div>
+Mnth.prototype = {
+	addNew:false,
+	curMonth:{},
+	storage:{},
+	init: function(year,month){
+		var that = this;
+		that.year=year;
+		that.month=month;
+		var list = that.renderCell();
+		if(localStorage[that.month] !=undefined){that.storage = JSON.parse(localStorage[that.month]);}
+		var list = document.getElementById('month');
+	list.onclick = function(){
+		var event = event||window.event;
+		event.stopPropagation();
+	if((event.target.tagName == 'LI')||(event.target.className == 'events')){		
+		//если клик попал на квадраты предыдущего или следующего месяца
+		if((event.target.className == 'days prevMnth')|| (event.target.className == 'days nextMnth'))return;
+		//удаление дропдаунов добавления событий
+		for(var i=0;i<list.children.length;i++){that.removeModal(list.children[i]);}
+		//удаление класса active других элементов
+		var prevActive = document.getElementsByClassName('days active');
+		if(prevActive.length>=1){prevActive[0].classList.remove('active')};
+		//если событие на event, родительскому элементу добавляем active
+		if(event.target.className == 'events'){event.target.parentNode.classList.add('active')}
+		//если событие на квадрате дня
+		if(event.target.tagName == 'LI'){event.target.classList.add('active');}
+		if((event.target.className == 'days prevMnth')|| (event.target.className == 'days nextMnth'))return;
+		//получение индекса активного элемента
+		var activeL = document.getElementsByClassName('days active');
+		if(activeL.length>=1){
+		var ind = activeL[0].getAttribute('index');
+		//добавление дропдауна для создания события
+		var box = document.getElementById('addDayEvent');
+		var evs = activeL[0].getElementsByClassName('events');}
+		if(evs.length>1){activeL[0].insertBefore(box, evs[0]);}
+		else{
+			var activeL = document.getElementsByClassName('days active');
+			activeL[0].appendChild(that.box);}		
+		function detectPos(){
+			if(window.innerWidth-(activeL[0].offsetLeft+activeL[0].offsetWidth) <= 350){
+				that.box.classList.add('leftAdd');
+				var ib = that.box.getElementsByTagName('I')[0];
+				ib.classList.remove('arroWLeft');
+				ib.classList.add('arroWRight');
+			}else if(window.innerWidth-(activeL[0].offsetLeft+activeL[0].offsetWidth) > 350){
+				that.box.classList.remove('leftAdd');
+				var i = that.box.getElementsByTagName('I')[0];
+				i.classList.remove('arroWRight');
+				i.classList.add('arroWLeft');
+			}
+	}
+		if(window.innerHeight-(activeL[0].offsetTop+activeL[0].offsetHeight) <= 350){
+			that.box.classList.add('bottomAdd');
+			var i = that.box.getElementsByTagName('I')[0];
+			i.classList.add('arroBot');
+		}else if(window.innerHeight-(activeL[0].offsetTop+activeL[0].offsetHeight) > 350)
+		{
+			that.box.classList.remove('bottomAdd');
+			var i = that.box.getElementsByTagName('I')[0];
+			i.classList.remove('arroBot');
+		}
+		
+			var form = document.getElementsByClassName('addDE')[0]; 
+			//очистка формы при переключении с одного квадрата на другой
+			resetForm();
+			//если для дня уже создано событие
+			console.log(that.month);
+			if(JSON.parse(localStorage[that.month])[ind]){
+				var obj = JSON.parse(localStorage[that.month])[ind];
+				for(var key in obj){
+					for(var k=0;k<form.children.length;k++){
+						if((form.children[k].tagName == 'TEXTAREA')&&(form.children[k].getAttribute('name') == key)){
+						form.children[k].value=obj[key];
+						}
+					}
+				}
+				}else{resetForm();} 
+				that.box.classList.remove('dn');
+				document.getElementById('resetE').onclick = function(){resetForm()}
+			that.saveEvent(ind);
+			if(that.addNew == true){that.createEvent(that.ind,JSON.parse(localStorage[that.month]));}
+			that.addNew = false;
+			document.onclick = function(){box.classList.add('dn');}
+			}	
+		}
+	},
+	saveEvent: function(ind){
+		var that = this;
+		if(that.storage==undefined){that.storage = {};}
+		that.storage[ind] = {};console.log(that.storage);
+		document.getElementById('submitE').onclick = function(){
+			var el = document.getElementById('month').children[ind];
+			for(var n=0;n<el.children.length;n++){if(el.children[n].className == 'events'){el.children[n].innerHTML = '';}}
+			var form = document.getElementsByClassName('addDE')[0];
+			for(var i=0;i<form.children.length;i++){
+				if((form.children[i].tagName == 'TEXTAREA')&&(form.children[i].value != '')){
+					var key = form.children[i].getAttribute('name');
+					that.storage[ind][key] = form.children[i].value;
+				}
+			}
+			localStorage[that.month] = JSON.stringify(that.storage);
+			that.addNew = true;
+			that.ind = ind;
+		}
+	},
+	removeModal: function(el){
+		try{
+		while((el.lastChild != null)&&(el.lastChild.className == 'arrow-box')) el.removeChild(el.lastChild);
+		el.parentNode.removeChild(el.lastChild);
+		} catch (e){
+		return false;
+		}
+		return true;
+	},
+	renderCell: function(){
+		var list = document.createElement('ul');
+		document.getElementById('1').appendChild(list);
+		list.setAttribute('id','month'); 
+		var start = new Date(this.year,this.month,1),
+		td = start.getDay(),
+		countDay = 1;
+		console.log(td); // если td == 0
+		if(td==0){td = 7};
+		var a = function(t,elem){elem.innerHTML = t;} 
+		var daysOfweek = ['Воскресенье, ','Понедельник, ','Вторник, ','Среда, ','Четверг, ','Пятница, ','Суббота, '];
+		var mnthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+		var daysAmmount = [31,28,31,30,31,30,31,31,30,31,30,31];
+		for(var i=0;i<42;i++){
+			var li = document.createElement('li'),
+			day = document.createElement('span');
+			list.appendChild(li);
+			li.classList.add('days'); 
+			day.classList.add('dayOfweek'); 
+			li.setAttribute('index',i);
+			if((i>=0)&&(i<7)){
+				li.appendChild(day);
+				if(i==6){a(daysOfweek[0],day)} else {a(daysOfweek[i+1],day);}
+			}
+			if(i==td-1){
+				if(countDay <= daysAmmount[this.month]){
+					var date = document.createElement('span');
+					li.appendChild(date);
+					date.classList.add('date'); 
+					a(countDay,date);
+					countDay++;
+					td++;
+				}else if(countDay > daysAmmount[this.month]){
+					countDay = 1;
+					var date = document.createElement('span');
+					li.appendChild(date);
+					li.classList.add('nextMnth');
+					date.classList.add('date'); 
+					a(countDay,date);
+					countDay++;
+					td++; 
+				} 
+			} 
+		}
+	var prevMonthDays = daysAmmount[this.month-1];
+	var t = start.getDay();
+	if(t==0){t = 7};
+	for(var n=t-2;n >=0;n--){
+		var dat = document.createElement('span');
+		list.children[n].appendChild(dat);
+		list.children[n].classList.add('prevMnth');
+		dat.classList.add('date'); 
+		a(prevMonthDays,dat); 
+		prevMonthDays--;
+	}
+	var el = document.getElementsByClassName('nextMnth')[0];
+	var indStart = el.getAttribute('index');
+		for(var n=indStart;n<42;n++){
+			var dat = document.createElement('span');
+			list.children[n].classList.add('nextMnth');
+		}
+		return list;
+	},
+	createEvent: function(ind,obj){
+		var dv = document.createElement('div'),
+		list = document.getElementById('month');
+		list.children[ind].appendChild(dv);
+		dv.innerHTML = '';
+		dv.classList.add('events');
+		for(var key in obj[ind]){
+			if(obj[ind][key] != undefined){ 
+			dv.innerHTML += '<strong>'+key+'</strong>'+': ' + obj[ind][key]+'</br>';}
+		}
+	}
+}
 
+//ИНИЦИАЛИЗАЦИЯ
+
+//начальная - текущая дата 
+	var mnthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+	var today = new Date(),
+	year = today.getFullYear(),
+	month = today.getMonth();
+	//создается экземпляр текущего месяца - объект передается текущий год и месяц
+	var mnth=makeNewMonth();
+	var addEv = document.getElementById('addDayEvent');
+	mnth.box = addEv;
+	getEvents();
+document.body.onclick = function(){	
+		var event = event||window.event;
+		event.stopPropagation();
+		var list = document.getElementById('month');
+	if((event.target.getAttribute('id') == 'Previous')||(event.target.getAttribute('id') == 'arrow_left')){
+		delete mnth;
+		month -= 1;
+		if(month == -1){month = 11;year -=1;}
+		var mnth = reMakeNewMonth(year,month);
+		mnth.box = addEv;
+		getEvents();
+}else if((event.target.getAttribute('id') == 'Next')||(event.target.getAttribute('id') == 'arrow_right')){
+		delete mnth;
+		month += 1;
+		if(month == 12){month = 0;year +=1;}
+		var mnth = reMakeNewMonth(year,month);
+		mnth.box = addEv;
+		getEvents();
+	}
+}
+//Поиск
+var search = document.getElementById('Search'),
+ls = document.getElementById('liveSearch'),
+cont = document.getElementById('arr_b');
+search.onkeyup = function(){
+	ls.classList.remove('dn');
+	var val = search.value,
+	arr = [];
+	for(var key in localStorage){
+		var k = parseInt(key);
+		if((k>=0)||(k<=11)){
+			var td = countStartMnthDay(k);
+			var globCalend = JSON.parse(localStorage[k]);
+			for(var v in globCalend){
+				for(var n in globCalend[v]){
+					if(globCalend[v][n].indexOf(val) !=-1){
+						var sub = mnthNames[k].substr(0,mnthNames[k].length-1)+'я';
+						if(mnthNames[k] == 'Август') sub='Августа';
+						var o = {}, day = v-td+1;
+						o['text'] = '<h3>'+globCalend[v][n]+'</h3>'+'<br/>'+day+' '+sub.toLowerCase();
+						o['ind'] = v; 
+						o['month'] = k;
+						arr.push(o);
+					}
+				}
+			}
+		}
+	}
+	cont.innerHTML = '';
+	if(!val){arr = [];cont.innerHTML = '';} 
+	for(var i = 0;i<arr.length; i++){
+		var div = document.createElement('div');
+		cont.appendChild(div);
+		div.classList.add('ev');
+		div.setAttribute('index',arr[i]['ind']);
+		div.setAttribute('mnth',arr[i]['month']);
+		div.innerHTML = arr[i]['text'];
+	}
+	var el = document.getElementsByClassName('ev');
+	document.onmouseover = function(){if(event.target.className == 'ev') event.target.classList.add('fond');}
+	document.onmouseout = function(){if(event.target.className == 'ev fond') event.target.classList.remove('fond');}
+}
+//Спрятать окно поиска
+document.onclick = function(){ls.classList.add('dn');};
+//Открыть попап с подробностями
+document.getElementById('arr_b').onclick = function(){
+	var event = event||window.event;
+	event.stopPropagation();
+	var o={};
+	if((event.target.className == 'ev')||(event.target.className == 'ev fond')){
+		var popup = document.getElementById('popup');
+		popup.classList.remove('dn');
+		document.getElementById('arr_b').classList.add('dn'); 
+		document.getElementById('arrowUpS').classList.add('dn');
+		var ind = event.target.getAttribute('index');
+		var month = event.target.getAttribute('mnth');
+		o['ind'] = ind;
+		o['mnth'] = month;
+
+		var td = countStartMnthDay(month);
+		var day = ind-td+1;
+
+		var sub = mnthNames[month].substr(0,mnthNames[month].length-1)+'я';
+		if(mnthNames[month] == 'Август') sub='Августа';
+
+		var iH = JSON.parse(localStorage[month])[ind];
+		var info = document.getElementById('info');
+		var dv = document.createElement('div');
+
+		info.appendChild(dv);
+		dv.classList.add('dt');
+		dv.innerHTML = day+' '+sub;
+
+		for(var key in iH){
+			var d = document.createElement('div');
+			info.appendChild(d);
+			d.classList.add('inf');
+			d.innerHTML = key+': '+iH[key];
+		}
+	}
+	document.getElementById('addMem').onclick = function(){
+		var newMemb = document.getElementById('add_members').value;
+		if(newMemb=='') return;
+		document.getElementById('forAddMemb').classList.add('dn');
+		var st = JSON.parse(localStorage[o['mnth']]);
+		st[o['ind']] = st[o['ind']]||{};
+		if(st[o['ind']]['Участники']) st[o['ind']]['Участники'] +=', '+ newMemb;
+		else st[o['ind']]['Участники'] = newMemb;
+		localStorage[o['mnth']] = JSON.stringify(st);
+		var info = document.getElementById('info');
+		var t = info.innerHTML;
+		info.innerHTML = t+'<br/>'+'Добавлены участники: '+newMemb;
+	}
+	document.getElementById('deny').onclick = function(){
+		document.getElementById('add_members').value = '';
+		document.getElementById('forAddMemb').classList.add('dn');
+	} 
+}
+//Закрытие Попапа с подробностями
+document.getElementById('close').onclick = function(){
+	closePopup();
+}
+document.getElementById('background').onclick = function(){
+	closePopup();
+}
+
+//Клик на кнопке Обновить
+document.getElementById('Update').onclick = function(){
+	document.getElementById('Update').classList.toggle('pressed');
+	var div = document.getElementById('1');
+	var m = document.getElementById('month');
+	div.removeChild(m);
+	delete mnth; 
+	var mnth = new Mnth(year,month); 
+	getEvents();
+	document.getElementById('currentM').innerHTML = mnthNames[month]+' '+year; 
+}
+//Быстрое добавление события - клик на кнопке Добавить
+document.getElementById('Add').onclick = function(){
+	document.getElementById('Add').classList.add('pressed');
+	document.getElementById('addFast').classList.remove('dn');
+}
+//Быстрое добавление события
+document.getElementById('submit').onclick = function(){
+	var val = document.getElementById('fullEvent').value;
+	if(val == ''){
+	document.getElementById('addFast').classList.add('dn');
+	document.getElementById('Add').classList.remove('pressed');
+	return;
+	}
+	var regexp = /\d{1,2}/g,
+	obj = {},
+	arr = val.split(/\s+/);
+	obj['val'] ='';
+	for(var i=0;i<arr.length;i++){
+		var sub = arr[i].substr(0,arr[i].length-1),
+		haveMnth = false;
+		for(var k=0;k<mnthNames.length;k++){if(mnthNames[k].indexOf(sub)!= -1) {obj['month']=k;haveMnth= true;}}
+		var result = regexp.exec(arr[i]);
+		if(result){obj['day'] = parseInt(arr[i]);}
+		if(haveMnth== false && (parseInt(arr[i]) !=obj['day'])){obj['val'] +=' '+arr[i];} 
+		document.getElementById('addFast').classList.toggle('dn');
+		document.getElementById('Add').classList.remove('pressed');
+	}
+	ind = countInd(obj['day'],obj['month'])
+	addLocStorage(ind,obj['month'],obj['val']);
+}
+
+/*
+*d - день месяца (число)
+*m - месяц (число)
+*/
+function countInd(d,m){
+	var td = countStartMnthDay(m);
+	return td+(d-1);
+}
+/*
+*mn - месяц
+*/
+function countStartMnthDay(mn){
+	var start = new Date(year,mn,1),
+	td = start.getDay();
+	if(td == 0){td = 6}else td=td-1;
+	return td;
+}
+/*
+*i - индекс ячейки (число)
+*m - месяц (число)
+*v - сохряняемое значение
+*/
+function addLocStorage(i,m,v){
+	if(m == mnth.month){
+		mnth.storage[ind]={};
+		mnth.storage[ind]['Событие'] = v;
+		localStorage[mnth.month] = JSON.stringify(mnth.storage);
+		mnth.createEvent(ind,JSON.parse(localStorage[mnth.month]));
+	}else{
+		if(localStorage[m] != undefined){
+		var st = JSON.parse(localStorage[m]);}else st={};
+		st[ind] = {};
+		st[ind]['Событие'] = v;
+		localStorage[m] = JSON.stringify(st); 
+	}
+}
+
+function makeNewMonth(){
+	var div = document.getElementById('1');
+	var m = document.getElementById('month');
+	document.getElementById('currentM').innerHTML = mnthNames[month]+' '+year; 
+	return new Mnth(year,month); 
+}
+
+function reMakeNewMonth(year,month){
+	var div = document.getElementById('1');
+	var m = document.getElementById('month');
+	div.removeChild(m);
+	//delete mnth; 
+	document.getElementById('currentM').innerHTML = mnthNames[month]+' '+year; 
+	return new Mnth(year,month); 
+}
+
+function getEvents(){
+	if(localStorage[month] !=undefined){
+	var obj = JSON.parse(localStorage[month]);
+	var calend = document.getElementById('month');
+		for(var i=0;i<calend.children.length;i++){
+			var ind = calend.children[i].getAttribute('index');
+			if(obj[ind]!=undefined){mnth.createEvent(ind,obj);}
+		}
+	}
+};
+function resetForm(){
+		var form = document.getElementsByClassName('addDE')[0];
+		for(var i=0;i<form.children.length;i++){if(form.children[i].tagName == 'TEXTAREA'){form.children[i].value='';}}
+	};
+
+function closePopup(){
+	var info = document.getElementById('info');
+	info.innerHTML='';
+	document.getElementById('forAddMemb').classList.remove('dn');
+	document.getElementById('add_members').value = '';
+	document.getElementById('arrowUpS').classList.remove('dn');
+	document.getElementById('popup').classList.add('dn');
+	document.getElementById('arr_b').classList.remove('dn');
+}
+}
+</script>
+</head>
+<body>
+<!--header -->
+	<div class="header">
+		<div id="options" class="block70"> 
+			<div id="Add" class="dib">Добавить</div> 
+			<div id="Update" class="dib">Обновить</div>
 		</div>
+		<!--Попап для быстрого добавления событий -->
+		<div id="addFast" class="dn">
+			<i class="arrowUp"></i>
+			<textarea id="fullEvent" class="txt" cols="30" rows="1" placeholder="5 Марта, 14:00, День Рожденья"></textarea><br/>
+			<div id="submit">Сохранить</div>
 		</div>
-		</body>
-	</html>
+		<!--Поиск-->
+		<div id="srch" class="block20">
+			<textarea id="Search" class="txt" cols="30" rows="1" placeholder="Событие или участник"></textarea>
+			<!--Попап для показа событий -->
+			<div id="liveSearch" class="dn">
+				<i id="arrowUpS"></i>
+				<div id="arr_b"></div>
+			</div>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div id="change_mnth">
+		<div class="dib" id="Previous">
+			<i id="arrow_left"></i>
+		</div>
+		<div class="dib" id="currentM"></div>
+		<div class="dib" id="Next">
+			<i id="arrow_right"></i>
+		</div> 
+	</div> 
+	<div id = "1"></div>
+	<div id="addDayEvent" class="dn">
+		<i class="arrowLeft"></i>
+		<form class="addDE">
+			<textarea id="evt" class="txt mt20" name = "Событие" placeholder="Событие"></textarea><br/>
+			<textarea id="members" class="txt mt20" name = "Участники" placeholder="Участники"></textarea><br/>
+			<textarea id="time" class="txt mt20" name = "Время" placeholder="Время"></textarea><br/>
+			<div type="button" class="dib mt20" id="submitE">Сохранить</div>
+			<div type="button" class="dib mt20" id="resetE">Очистить</div>
+		</form>
+	</div>
+
+	<div id="popup" class="dn">
+	<div id="background"></div> <!--затененный экран-->
+		<div id="window"> <!--всплывающее окно-->
+			<div id = "info" class="block70 ml20"></div>
+			<div class="block20"><div class="ml20" id="close">x</div></div>
+			<div class="clear"></div>
+			<div class="ml20 mt20" id="forAddMemb">
+				<label for="add_members">Добавить участников:</label></br>
+				<textarea id="add_members" name = "Участники" class="txt" cols="30" rows="1" placeholder="Участники"></textarea><br/>
+				<div id="addMem" class="dib">Готово</div>
+				<div id="deny" class="dib">Удалить</div>
+			</div>
+		</div>
+	</div> 
+</body>
+</html>
