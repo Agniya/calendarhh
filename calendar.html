@@ -2,7 +2,6 @@
 <html>
 <head>
 <link rel="stylesheet" href="calendar.css">
-<!--<script type="text/javascript" src="calendar.js"></script>-->
 <script>
 window.onload = function(){
 
@@ -24,23 +23,23 @@ Mnth.prototype = {
 		var event = event||window.event;
 		event.stopPropagation();
 	if((event.target.tagName == 'LI')||(event.target.className == 'events')){		
-		//если клик попал на квадраты предыдущего или следующего месяца
+		//РµСЃР»Рё РєР»РёРє РїРѕРїР°Р» РЅР° РєРІР°РґСЂР°С‚С‹ РїСЂРµРґС‹РґСѓС‰РµРіРѕ РёР»Рё СЃР»РµРґСѓСЋС‰РµРіРѕ РјРµСЃСЏС†Р°
 		if((event.target.className == 'days prevMnth')|| (event.target.className == 'days nextMnth'))return;
-		//удаление дропдаунов добавления событий
+		//СѓРґР°Р»РµРЅРёРµ РґСЂРѕРїРґР°СѓРЅРѕРІ РґРѕР±Р°РІР»РµРЅРёСЏ СЃРѕР±С‹С‚РёР№
 		for(var i=0;i<list.children.length;i++){that.removeModal(list.children[i]);}
-		//удаление класса active других элементов
+		//СѓРґР°Р»РµРЅРёРµ РєР»Р°СЃСЃР° active РґСЂСѓРіРёС… СЌР»РµРјРµРЅС‚РѕРІ
 		var prevActive = document.getElementsByClassName('days active');
 		if(prevActive.length>=1){prevActive[0].classList.remove('active')};
-		//если событие на event, родительскому элементу добавляем active
+		//РµСЃР»Рё СЃРѕР±С‹С‚РёРµ РЅР° event, СЂРѕРґРёС‚РµР»СЊСЃРєРѕРјСѓ СЌР»РµРјРµРЅС‚Сѓ РґРѕР±Р°РІР»СЏРµРј active
 		if(event.target.className == 'events'){event.target.parentNode.classList.add('active')}
-		//если событие на квадрате дня
+		//РµСЃР»Рё СЃРѕР±С‹С‚РёРµ РЅР° РєРІР°РґСЂР°С‚Рµ РґРЅСЏ
 		if(event.target.tagName == 'LI'){event.target.classList.add('active');}
 		if((event.target.className == 'days prevMnth')|| (event.target.className == 'days nextMnth'))return;
-		//получение индекса активного элемента
+		//РїРѕР»СѓС‡РµРЅРёРµ РёРЅРґРµРєСЃР° Р°РєС‚РёРІРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
 		var activeL = document.getElementsByClassName('days active');
 		if(activeL.length>=1){
 		var ind = activeL[0].getAttribute('index');
-		//добавление дропдауна для создания события
+		//РґРѕР±Р°РІР»РµРЅРёРµ РґСЂРѕРїРґР°СѓРЅР° РґР»СЏ СЃРѕР·РґР°РЅРёСЏ СЃРѕР±С‹С‚РёСЏ
 		var box = document.getElementById('addDayEvent');
 		var evs = activeL[0].getElementsByClassName('events');}
 		if(evs.length>1){activeL[0].insertBefore(box, evs[0]);}
@@ -72,9 +71,9 @@ Mnth.prototype = {
 		}
 		
 			var form = document.getElementsByClassName('addDE')[0]; 
-			//очистка формы при переключении с одного квадрата на другой
+			//РѕС‡РёСЃС‚РєР° С„РѕСЂРјС‹ РїСЂРё РїРµСЂРµРєР»СЋС‡РµРЅРёРё СЃ РѕРґРЅРѕРіРѕ РєРІР°РґСЂР°С‚Р° РЅР° РґСЂСѓРіРѕР№
 			resetForm();
-			//если для дня уже создано событие
+			//РµСЃР»Рё РґР»СЏ РґРЅСЏ СѓР¶Рµ СЃРѕР·РґР°РЅРѕ СЃРѕР±С‹С‚РёРµ
 			console.log(that.month);
 			if(JSON.parse(localStorage[that.month])[ind]){
 				var obj = JSON.parse(localStorage[that.month])[ind];
@@ -130,11 +129,11 @@ Mnth.prototype = {
 		var start = new Date(this.year,this.month,1),
 		td = start.getDay(),
 		countDay = 1;
-		console.log(td); // если td == 0
+		console.log(td); // РµСЃР»Рё td == 0
 		if(td==0){td = 7};
 		var a = function(t,elem){elem.innerHTML = t;} 
-		var daysOfweek = ['Воскресенье, ','Понедельник, ','Вторник, ','Среда, ','Четверг, ','Пятница, ','Суббота, '];
-		var mnthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+		var daysOfweek = ['Р’РѕСЃРєСЂРµСЃРµРЅСЊРµ, ','РџРѕРЅРµРґРµР»СЊРЅРёРє, ','Р’С‚РѕСЂРЅРёРє, ','РЎСЂРµРґР°, ','Р§РµС‚РІРµСЂРі, ','РџСЏС‚РЅРёС†Р°, ','РЎСѓР±Р±РѕС‚Р°, '];
+		var mnthNames = ['РЇРЅРІР°СЂСЊ','Р¤РµРІСЂР°Р»СЊ','РњР°СЂС‚','РђРїСЂРµР»СЊ','РњР°Р№','РСЋРЅСЊ','РСЋР»СЊ','РђРІРіСѓСЃС‚','РЎРµРЅС‚СЏР±СЂСЊ','РћРєС‚СЏР±СЂСЊ','РќРѕСЏР±СЂСЊ','Р”РµРєР°Р±СЂСЊ'];
 		var daysAmmount = [31,28,31,30,31,30,31,31,30,31,30,31];
 		for(var i=0;i<42;i++){
 			var li = document.createElement('li'),
@@ -199,14 +198,14 @@ Mnth.prototype = {
 	}
 }
 
-//ИНИЦИАЛИЗАЦИЯ
+//РРќРР¦РРђР›РР—РђР¦РРЇ
 
-//начальная - текущая дата 
-	var mnthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+//РЅР°С‡Р°Р»СЊРЅР°СЏ - С‚РµРєСѓС‰Р°СЏ РґР°С‚Р° 
+	var mnthNames = ['РЇРЅРІР°СЂСЊ','Р¤РµРІСЂР°Р»СЊ','РњР°СЂС‚','РђРїСЂРµР»СЊ','РњР°Р№','РСЋРЅСЊ','РСЋР»СЊ','РђРІРіСѓСЃС‚','РЎРµРЅС‚СЏР±СЂСЊ','РћРєС‚СЏР±СЂСЊ','РќРѕСЏР±СЂСЊ','Р”РµРєР°Р±СЂСЊ'];
 	var today = new Date(),
 	year = today.getFullYear(),
 	month = today.getMonth();
-	//создается экземпляр текущего месяца - объект передается текущий год и месяц
+	//СЃРѕР·РґР°РµС‚СЃСЏ СЌРєР·РµРјРїР»СЏСЂ С‚РµРєСѓС‰РµРіРѕ РјРµСЃСЏС†Р° - РѕР±СЉРµРєС‚ РїРµСЂРµРґР°РµС‚СЃСЏ С‚РµРєСѓС‰РёР№ РіРѕРґ Рё РјРµСЃСЏС†
 	var mnth=makeNewMonth();
 	var addEv = document.getElementById('addDayEvent');
 	mnth.box = addEv;
@@ -231,7 +230,7 @@ document.body.onclick = function(){
 		getEvents();
 	}
 }
-//Поиск
+//РџРѕРёСЃРє
 var search = document.getElementById('Search'),
 ls = document.getElementById('liveSearch'),
 cont = document.getElementById('arr_b');
@@ -247,8 +246,8 @@ search.onkeyup = function(){
 			for(var v in globCalend){
 				for(var n in globCalend[v]){
 					if(globCalend[v][n].indexOf(val) !=-1){
-						var sub = mnthNames[k].substr(0,mnthNames[k].length-1)+'я';
-						if(mnthNames[k] == 'Август') sub='Августа';
+						var sub = mnthNames[k].substr(0,mnthNames[k].length-1)+'СЏ';
+						if(mnthNames[k] == 'РђРІРіСѓСЃС‚') sub='РђРІРіСѓСЃС‚Р°';
 						var o = {}, day = v-td+1;
 						o['text'] = '<h3>'+globCalend[v][n]+'</h3>'+'<br/>'+day+' '+sub.toLowerCase();
 						o['ind'] = v; 
@@ -273,9 +272,9 @@ search.onkeyup = function(){
 	document.onmouseover = function(){if(event.target.className == 'ev') event.target.classList.add('fond');}
 	document.onmouseout = function(){if(event.target.className == 'ev fond') event.target.classList.remove('fond');}
 }
-//Спрятать окно поиска
+//РЎРїСЂСЏС‚Р°С‚СЊ РѕРєРЅРѕ РїРѕРёСЃРєР°
 document.onclick = function(){ls.classList.add('dn');};
-//Открыть попап с подробностями
+//РћС‚РєСЂС‹С‚СЊ РїРѕРїР°Рї СЃ РїРѕРґСЂРѕР±РЅРѕСЃС‚СЏРјРё
 document.getElementById('arr_b').onclick = function(){
 	var event = event||window.event;
 	event.stopPropagation();
@@ -293,8 +292,8 @@ document.getElementById('arr_b').onclick = function(){
 		var td = countStartMnthDay(month);
 		var day = ind-td+1;
 
-		var sub = mnthNames[month].substr(0,mnthNames[month].length-1)+'я';
-		if(mnthNames[month] == 'Август') sub='Августа';
+		var sub = mnthNames[month].substr(0,mnthNames[month].length-1)+'СЏ';
+		if(mnthNames[month] == 'РђРІРіСѓСЃС‚') sub='РђРІРіСѓСЃС‚Р°';
 
 		var iH = JSON.parse(localStorage[month])[ind];
 		var info = document.getElementById('info');
@@ -317,19 +316,19 @@ document.getElementById('arr_b').onclick = function(){
 		document.getElementById('forAddMemb').classList.add('dn');
 		var st = JSON.parse(localStorage[o['mnth']]);
 		st[o['ind']] = st[o['ind']]||{};
-		if(st[o['ind']]['Участники']) st[o['ind']]['Участники'] +=', '+ newMemb;
-		else st[o['ind']]['Участники'] = newMemb;
+		if(st[o['ind']]['РЈС‡Р°СЃС‚РЅРёРєРё']) st[o['ind']]['РЈС‡Р°СЃС‚РЅРёРєРё'] +=', '+ newMemb;
+		else st[o['ind']]['РЈС‡Р°СЃС‚РЅРёРєРё'] = newMemb;
 		localStorage[o['mnth']] = JSON.stringify(st);
 		var info = document.getElementById('info');
 		var t = info.innerHTML;
-		info.innerHTML = t+'<br/>'+'Добавлены участники: '+newMemb;
+		info.innerHTML = t+'<br/>'+'Р”РѕР±Р°РІР»РµРЅС‹ СѓС‡Р°СЃС‚РЅРёРєРё: '+newMemb;
 	}
 	document.getElementById('deny').onclick = function(){
 		document.getElementById('add_members').value = '';
 		document.getElementById('forAddMemb').classList.add('dn');
 	} 
 }
-//Закрытие Попапа с подробностями
+//Р—Р°РєСЂС‹С‚РёРµ РџРѕРїР°РїР° СЃ РїРѕРґСЂРѕР±РЅРѕСЃС‚СЏРјРё
 document.getElementById('close').onclick = function(){
 	closePopup();
 }
@@ -337,7 +336,7 @@ document.getElementById('background').onclick = function(){
 	closePopup();
 }
 
-//Клик на кнопке Обновить
+//РљР»РёРє РЅР° РєРЅРѕРїРєРµ РћР±РЅРѕРІРёС‚СЊ
 document.getElementById('Update').onclick = function(){
 	document.getElementById('Update').classList.toggle('pressed');
 	var div = document.getElementById('1');
@@ -348,12 +347,12 @@ document.getElementById('Update').onclick = function(){
 	getEvents();
 	document.getElementById('currentM').innerHTML = mnthNames[month]+' '+year; 
 }
-//Быстрое добавление события - клик на кнопке Добавить
+//Р‘С‹СЃС‚СЂРѕРµ РґРѕР±Р°РІР»РµРЅРёРµ СЃРѕР±С‹С‚РёСЏ - РєР»РёРє РЅР° РєРЅРѕРїРєРµ Р”РѕР±Р°РІРёС‚СЊ
 document.getElementById('Add').onclick = function(){
 	document.getElementById('Add').classList.add('pressed');
 	document.getElementById('addFast').classList.remove('dn');
 }
-//Быстрое добавление события
+//Р‘С‹СЃС‚СЂРѕРµ РґРѕР±Р°РІР»РµРЅРёРµ СЃРѕР±С‹С‚РёСЏ
 document.getElementById('submit').onclick = function(){
 	var val = document.getElementById('fullEvent').value;
 	if(val == ''){
@@ -380,15 +379,15 @@ document.getElementById('submit').onclick = function(){
 }
 
 /*
-*d - день месяца (число)
-*m - месяц (число)
+*d - РґРµРЅСЊ РјРµСЃСЏС†Р° (С‡РёСЃР»Рѕ)
+*m - РјРµСЃСЏС† (С‡РёСЃР»Рѕ)
 */
 function countInd(d,m){
 	var td = countStartMnthDay(m);
 	return td+(d-1);
 }
 /*
-*mn - месяц
+*mn - РјРµСЃСЏС†
 */
 function countStartMnthDay(mn){
 	var start = new Date(year,mn,1),
@@ -397,21 +396,21 @@ function countStartMnthDay(mn){
 	return td;
 }
 /*
-*i - индекс ячейки (число)
-*m - месяц (число)
-*v - сохряняемое значение
+*i - РёРЅРґРµРєСЃ СЏС‡РµР№РєРё (С‡РёСЃР»Рѕ)
+*m - РјРµСЃСЏС† (С‡РёСЃР»Рѕ)
+*v - СЃРѕС…СЂСЏРЅСЏРµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ
 */
 function addLocStorage(i,m,v){
 	if(m == mnth.month){
 		mnth.storage[ind]={};
-		mnth.storage[ind]['Событие'] = v;
+		mnth.storage[ind]['РЎРѕР±С‹С‚РёРµ'] = v;
 		localStorage[mnth.month] = JSON.stringify(mnth.storage);
 		mnth.createEvent(ind,JSON.parse(localStorage[mnth.month]));
 	}else{
 		if(localStorage[m] != undefined){
 		var st = JSON.parse(localStorage[m]);}else st={};
 		st[ind] = {};
-		st[ind]['Событие'] = v;
+		st[ind]['РЎРѕР±С‹С‚РёРµ'] = v;
 		localStorage[m] = JSON.stringify(st); 
 	}
 }
@@ -463,19 +462,19 @@ function closePopup(){
 <!--header -->
 	<div class="header">
 		<div id="options" class="block70"> 
-			<div id="Add" class="dib">Добавить</div> 
-			<div id="Update" class="dib">Обновить</div>
+			<div id="Add" class="dib">Р”РѕР±Р°РІРёС‚СЊ</div> 
+			<div id="Update" class="dib">РћР±РЅРѕРІРёС‚СЊ</div>
 		</div>
-		<!--Попап для быстрого добавления событий -->
+		<!--РџРѕРїР°Рї РґР»СЏ Р±С‹СЃС‚СЂРѕРіРѕ РґРѕР±Р°РІР»РµРЅРёСЏ СЃРѕР±С‹С‚РёР№ -->
 		<div id="addFast" class="dn">
 			<i class="arrowUp"></i>
-			<textarea id="fullEvent" class="txt" cols="30" rows="1" placeholder="5 Марта, 14:00, День Рожденья"></textarea><br/>
-			<div id="submit">Сохранить</div>
+			<textarea id="fullEvent" class="txt" cols="30" rows="1" placeholder="5 РњР°СЂС‚Р°, 14:00, Р”РµРЅСЊ Р РѕР¶РґРµРЅСЊСЏ"></textarea><br/>
+			<div id="submit">РЎРѕС…СЂР°РЅРёС‚СЊ</div>
 		</div>
-		<!--Поиск-->
+		<!--РџРѕРёСЃРє-->
 		<div id="srch" class="block20">
-			<textarea id="Search" class="txt" cols="30" rows="1" placeholder="Событие или участник"></textarea>
-			<!--Попап для показа событий -->
+			<textarea id="Search" class="txt" cols="30" rows="1" placeholder="РЎРѕР±С‹С‚РёРµ РёР»Рё СѓС‡Р°СЃС‚РЅРёРє"></textarea>
+			<!--РџРѕРїР°Рї РґР»СЏ РїРѕРєР°Р·Р° СЃРѕР±С‹С‚РёР№ -->
 			<div id="liveSearch" class="dn">
 				<i id="arrowUpS"></i>
 				<div id="arr_b"></div>
@@ -496,25 +495,25 @@ function closePopup(){
 	<div id="addDayEvent" class="dn">
 		<i class="arrowLeft"></i>
 		<form class="addDE">
-			<textarea id="evt" class="txt mt20" name = "Событие" placeholder="Событие"></textarea><br/>
-			<textarea id="members" class="txt mt20" name = "Участники" placeholder="Участники"></textarea><br/>
-			<textarea id="time" class="txt mt20" name = "Время" placeholder="Время"></textarea><br/>
-			<div type="button" class="dib mt20" id="submitE">Сохранить</div>
-			<div type="button" class="dib mt20" id="resetE">Очистить</div>
+			<textarea id="evt" class="txt mt20" name = "РЎРѕР±С‹С‚РёРµ" placeholder="РЎРѕР±С‹С‚РёРµ"></textarea><br/>
+			<textarea id="members" class="txt mt20" name = "РЈС‡Р°СЃС‚РЅРёРєРё" placeholder="РЈС‡Р°СЃС‚РЅРёРєРё"></textarea><br/>
+			<textarea id="time" class="txt mt20" name = "Р’СЂРµРјСЏ" placeholder="Р’СЂРµРјСЏ"></textarea><br/>
+			<div type="button" class="dib mt20" id="submitE">РЎРѕС…СЂР°РЅРёС‚СЊ</div>
+			<div type="button" class="dib mt20" id="resetE">РћС‡РёСЃС‚РёС‚СЊ</div>
 		</form>
 	</div>
 
 	<div id="popup" class="dn">
-	<div id="background"></div> <!--затененный экран-->
-		<div id="window"> <!--всплывающее окно-->
+	<div id="background"></div> <!--Р·Р°С‚РµРЅРµРЅРЅС‹Р№ СЌРєСЂР°РЅ-->
+		<div id="window"> <!--РІСЃРїР»С‹РІР°СЋС‰РµРµ РѕРєРЅРѕ-->
 			<div id = "info" class="block70 ml20"></div>
 			<div class="block20"><div class="ml20" id="close">x</div></div>
 			<div class="clear"></div>
 			<div class="ml20 mt20" id="forAddMemb">
-				<label for="add_members">Добавить участников:</label></br>
-				<textarea id="add_members" name = "Участники" class="txt" cols="30" rows="1" placeholder="Участники"></textarea><br/>
-				<div id="addMem" class="dib">Готово</div>
-				<div id="deny" class="dib">Удалить</div>
+				<label for="add_members">Р”РѕР±Р°РІРёС‚СЊ СѓС‡Р°СЃС‚РЅРёРєРѕРІ:</label></br>
+				<textarea id="add_members" name = "РЈС‡Р°СЃС‚РЅРёРєРё" class="txt" cols="30" rows="1" placeholder="РЈС‡Р°СЃС‚РЅРёРєРё"></textarea><br/>
+				<div id="addMem" class="dib">Р“РѕС‚РѕРІРѕ</div>
+				<div id="deny" class="dib">РЈРґР°Р»РёС‚СЊ</div>
 			</div>
 		</div>
 	</div> 
