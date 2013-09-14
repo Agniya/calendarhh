@@ -37,33 +37,31 @@ Mnth.prototype = {
 		if((event.target.className == 'days prevMnth')|| (event.target.className == 'days nextMnth'))return;
 		//получение индекса активного элемента
 		var activeL = document.getElementsByClassName('days active');
-		if(activeL.length>=1){
-		var ind = activeL[0].getAttribute('index');
+		if(activeL.length>=1){var ind = activeL[0].getAttribute('index');
 		//добавление дропдауна для создания события
 		var box = document.getElementById('addDayEvent');
-		var evs = activeL[0].getElementsByClassName('events');}
+		var evs = activeL[0].getElementsByClassName('events');
 		if(evs.length>1){activeL[0].insertBefore(box, evs[0]);}
-		else{
-			var activeL = document.getElementsByClassName('days active');
-			activeL[0].appendChild(that.box);}		
+		else{var activeL = document.getElementsByClassName('days active');activeL[0].appendChild(that.box);}		
+		detectPos();}
 		function detectPos(){
-			if(window.innerWidth-(activeL[0].offsetLeft+activeL[0].offsetWidth) <= 350){
+			if(window.innerWidth-(activeL[0].offsetLeft+activeL[0].offsetWidth) <= 300){
 				that.box.classList.add('leftAdd');
 				var ib = that.box.getElementsByTagName('I')[0];
 				ib.classList.remove('arroWLeft');
 				ib.classList.add('arroWRight');
-			}else if(window.innerWidth-(activeL[0].offsetLeft+activeL[0].offsetWidth) > 350){
+			}else if(window.innerWidth-(activeL[0].offsetLeft+activeL[0].offsetWidth) > 300){
 				that.box.classList.remove('leftAdd');
 				var i = that.box.getElementsByTagName('I')[0];
 				i.classList.remove('arroWRight');
 				i.classList.add('arroWLeft');
 			}
 	}
-		if(window.innerHeight-(activeL[0].offsetTop+activeL[0].offsetHeight) <= 350){
+		if(window.innerHeight-(activeL[0].offsetTop+activeL[0].offsetHeight) <= 200){
 			that.box.classList.add('bottomAdd');
 			var i = that.box.getElementsByTagName('I')[0];
 			i.classList.add('arroBot');
-		}else if(window.innerHeight-(activeL[0].offsetTop+activeL[0].offsetHeight) > 350)
+		}else if(window.innerHeight-(activeL[0].offsetTop+activeL[0].offsetHeight) > 200)
 		{
 			that.box.classList.remove('bottomAdd');
 			var i = that.box.getElementsByTagName('I')[0];
